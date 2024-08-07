@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class Reposition : MonoBehaviour
 {
+    // Enemy의 Collider2D
+    Collider2D coll;
+
+    void Awake()
+    {
+        coll = GetComponent<Collider2D>();
+    }
+
     void OnTriggerExit2D(Collider2D collition)
     {
         if (!collition.CompareTag("Area")) return;
@@ -26,7 +34,7 @@ public class Reposition : MonoBehaviour
         // float diffY = Mathf.Abs(playerPos.y - myPos.y);
 
         // Input System 사용시 코드
-        // Vector3 playerDir = GameManager.Instance.player.inputVec;
+        Vector3 playerDir = GameManager.Instance.player.inputVec;
         // float diffX = playerDir.x < 0 ? -1 : 1;
         // float diffY = playerDir.y < 0 ? -1 : 1;
 
@@ -43,7 +51,11 @@ public class Reposition : MonoBehaviour
                 }
                 break;
             case "Enemy":
-
+                if (coll.enabled)
+                {
+                    //플레이어의 진행방향보다 좀더 앞에 재배치
+                    transform.Translate(playerDir * 20 + new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f), 0));
+                }
                 break;
 
         }
