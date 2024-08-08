@@ -13,7 +13,10 @@ public class Enemy : MonoBehaviour
     SpriteRenderer spriter;
     Animator anim;
 
-
+    void OnEnable()
+    {
+        target = GameManager.Instance.player.GetComponent<Rigidbody2D>();
+    }
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
