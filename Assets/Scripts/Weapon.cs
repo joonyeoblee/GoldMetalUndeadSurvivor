@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -10,24 +11,33 @@ public class Weapon : MonoBehaviour
     public float damage;
     public int count;
     public float speed;
+    float timer = 0;
 
-    private void Start()
+
+    Player player;
+    void Awake()
+    {
+        player = GetComponentInParent<Player>();
+    }
+    void Start()
     {
         Init();
     }
-    private void Update()
+    void Update()
     {
         switch (id)
         {
             case 0:
-                transform.Rotate(Vector3.forward * speed * Time.deltaTime); //½Ã°è¹æÇâÀ¸·Î È¸Àü
+                transform.Rotate(Vector3.forward * speed * Time.deltaTime);
 
                 break;
-
-            case 1:
-                break;
-
             default:
+                timer += Time.deltaTime;
+                if (timer > speed)
+                {
+                    timer = 0f;
+                    Fire();
+                }
                 break;
         }
 
@@ -53,14 +63,11 @@ public class Weapon : MonoBehaviour
         switch (id)
         {
             case 0:
-                speed -= 150; //¹«±â°¡ ¿òÁ÷ÀÌ´Â ¼Óµµ À½¼ö¿©¾ß ½Ã°è¹æÇâ
+                speed -= 150; // ìŒìˆ˜ì—¬ì•¼ ì‹œê³„ë°©í–¥ íšŒì „
                 LocateWeapon();
                 break;
-
-            case 1:
-                break;
-
             default:
+                speed = 0.3f;
                 break;
         }
     }
@@ -69,7 +76,7 @@ public class Weapon : MonoBehaviour
     {
         for (int index = 0; index < count; index++)
         {
-            //bulletÀÌ »ı¼ºµÉ¶§ PoolÀÇ ÀÚ½ÄÀ¸·Î µî·Ï ÀÌ¸¦ ¹Ù²Ù±â À§ÇÑ Transform
+
             Transform bullet;
             if (index < transform.childCount)
             {
@@ -84,14 +91,30 @@ public class Weapon : MonoBehaviour
             bullet.localPosition = Vector3.zero;
             bullet.localRotation = Quaternion.identity;
 
-            // ¹«±â È¸Àü
+
             Vector3 rotVec = Vector3.forward * 360 * index / count;
             bullet.Rotate(rotVec);
             bullet.Translate(bullet.up * 1.5f, Space.World);
-            bullet.GetComponent<Bullet>().Init(damage, -1); // -1 is Infinity per.
+            bullet.GetComponent<Bullet>().Init(damage, -1, Vector3.zero); // -1 is Infinity per.
 
 
 
         }
+    }
+
+    void Fire()
+    {
+        // Get bullet prefab from PoolManager
+        if (!player.scanner.nearestTarget)
+            return;
+
+        Vector3 targetPos = player.scanner.nearestTarget.position;
+        Vector3 dir = targetPos - transform.position;
+        dir.Normalize();
+
+        Transform bullet = GameManager.Instance.pool.Get(prefabId).transform;
+        bullet.position = transform.position;
+        bullet.rotation = Quaternion.FromToRotation(Vector3.up, dir); // ì ì˜ ë°©í–¥ìœ¼ë¡œ íšŒì „
+        bullet.GetComponent<Bullet>().Init(damage, count, dir);
     }
 }
