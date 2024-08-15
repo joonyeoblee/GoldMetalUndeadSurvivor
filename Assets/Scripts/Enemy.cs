@@ -16,25 +16,35 @@ public class Enemy : MonoBehaviour
     bool isLive;
 
     Rigidbody2D rigid;
+    Collider2D coll;
     SpriteRenderer spriter;
     Animator anim;
+    WaitForFixedUpdate wait;
 
     void OnEnable()
     {
         target = GameManager.Instance.player.GetComponent<Rigidbody2D>();
         isLive = true;
+        isLive = true;
+        coll.enabled = true;
+        rigid.simulated = true;
+        spriter.sortingOrder = 2;
+        anim.SetBool("Dead", false);
         health = maxHealth;
     }
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
+        coll = GetComponent<Collider2D>();
         spriter = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
+        wait = new WaitForFixedUpdate();
     }
 
     void FixedUpdate()
     {
-        if (!isLive) return;
+        // Can get state info from animator
+        if (!isLive || anim.GetCurrentAnimatorStateInfo(0).IsName("Hit")) return;
 
         Vector2 dirVec = target.position - rigid.position;
         Vector2 nextVec = dirVec.normalized * speed * Time.fixedDeltaTime;
@@ -63,15 +73,31 @@ public class Enemy : MonoBehaviour
         if (!collision.CompareTag("Bullet")) return;
 
         health -= collision.GetComponent<Bullet>().damage;
+        StartCoroutine(KnockBack());
 
         if (health > 0)
         {
-
+            anim.SetTrigger("Hit");
         }
         else
         {
-            Dead();
+            //OnDead
+            isLive = false;
+            coll.enabled = false;
+            rigid.simulated = false;
+            spriter.sortingOrder = 1;
+            anim.SetBool("Dead", true);
         }
+    }
+
+    IEnumerator KnockBack()
+    {
+        yield return wait; // wait for next frame
+
+        Vector3 playerPos = GameManager.Instance.player.transform.position;
+        Vector3 dirVec = (transform.position - playerPos).normalized;
+
+        rigid.AddForce(dirVec * 3, ForceMode2D.Impulse);
     }
 
     void Dead()
