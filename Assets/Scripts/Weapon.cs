@@ -17,12 +17,9 @@ public class Weapon : MonoBehaviour
     Player player;
     void Awake()
     {
-        player = GetComponentInParent<Player>();
+        player = GameManager.Instance.player;
     }
-    void Start()
-    {
-        Init();
-    }
+
     void Update()
     {
         switch (id)
@@ -56,20 +53,42 @@ public class Weapon : MonoBehaviour
         if (id == 0)
             LocateWeapon();
 
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
+
     }
 
-    public void Init()
+    public void Init(ItemData data)
     {
+        // Basic Set
+        name = "Weapon" + data.itemId;
+        transform.parent = player.transform;
+        transform.localPosition = Vector3.zero;
+
+        // Property Set
+        id = data.itemId;
+        damage = data.baseDamage;
+        count = data.baseCount;
+
+        for (int index = 0; index < GameManager.Instance.pool.prefabs.Length; index++)
+        {
+            if (data.projectile == GameManager.Instance.pool.prefabs[index])
+            {
+                prefabId = index;
+                break;
+            }
+        }
         switch (id)
         {
             case 0:
-                speed -= 150; // 음수여야 시계방향 회전
+                speed += 150; // 음수여야 시계방향 회전
                 LocateWeapon();
                 break;
             default:
                 speed = 0.3f;
                 break;
         }
+
+        player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
     }
 
     void LocateWeapon()
@@ -96,9 +115,6 @@ public class Weapon : MonoBehaviour
             bullet.Rotate(rotVec);
             bullet.Translate(bullet.up * 1.5f, Space.World);
             bullet.GetComponent<Bullet>().Init(damage, -1, Vector3.zero); // -1 is Infinity per.
-
-
-
         }
     }
 
