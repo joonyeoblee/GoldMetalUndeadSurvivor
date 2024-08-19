@@ -38,11 +38,6 @@ public class Weapon : MonoBehaviour
                 break;
         }
 
-        // ... Test Code..
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            LevelUp(20, 5);
-        }
     }
 
     public void LevelUp(float damage, int count)
@@ -87,6 +82,11 @@ public class Weapon : MonoBehaviour
                 speed = 0.3f;
                 break;
         }
+
+        // Hand Set
+        Hand hand = player.hands[(int)data.itemType];
+        hand.sprite.sprite = data.hand;
+        hand.gameObject.SetActive(true);
 
         player.BroadcastMessage("ApplyGear", SendMessageOptions.DontRequireReceiver);
     }
