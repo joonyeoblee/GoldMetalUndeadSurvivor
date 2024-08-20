@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     [Header("# Game Control")]
+    public bool isLive;
     public float gameTime;
     public float maxGameTime = 2 * 10;
     [Header("# Player Info")]
@@ -31,9 +32,15 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         health = maxHealth;
+
+        // test code
+        uiLevelUp.select(0);
     }
     void Update()
     {
+        if (!isLive)
+            return;
+
         gameTime += Time.deltaTime;
 
         if (gameTime > maxGameTime)
@@ -52,6 +59,19 @@ public class GameManager : MonoBehaviour
             exp = 0;
             uiLevelUp.Show();
         }
+    }
+
+    public void Stop()
+    {
+        isLive = false;
+        // 유니티의 시간 속도(배율) 조절
+        Time.timeScale = 0;
+    }
+
+    public void Resume()
+    {
+        isLive = true;
+        Time.timeScale = 1;
     }
 
 }

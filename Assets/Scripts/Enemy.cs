@@ -43,6 +43,9 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!GameManager.Instance.isLive)
+            return;
+
         // Can get state info from animator
         if (!isLive || anim.GetCurrentAnimatorStateInfo(0).IsName("Hit")) return;
 
@@ -55,6 +58,9 @@ public class Enemy : MonoBehaviour
 
     void LateUpdate()
     {
+        if (!GameManager.Instance.isLive)
+            return;
+
         if (!isLive) return;
 
         spriter.flipX = target.position.x < rigid.position.x;
