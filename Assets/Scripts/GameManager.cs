@@ -53,7 +53,8 @@ public class GameManager : MonoBehaviour
     public void GetExp()
     {
         exp++;
-        if (exp >= nextExp[level])
+        // 만약 9레벨 이상일 떈 항상 nextLevel.Length + 1 (9) 이를 통해 무한 레벨 생성
+        if (exp >= nextExp[Mathf.Min(level, nextExp.Length - 1)])
         {
             level++;
             exp = 0;

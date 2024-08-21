@@ -16428,6 +16428,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e923e5ae684d43af8fe5fdbb2dd80bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isLive: 1
   gameTime: 0
   maxGameTime: 20
   health: 0
