@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,8 +12,8 @@ public class GameManager : MonoBehaviour
     public float gameTime;
     public float maxGameTime = 2 * 10;
     [Header("# Player Info")]
-    public int health;
-    public int maxHealth = 100;
+    public float health;
+    public float maxHealth = 100;
     public int level;
     public int kill;
     public int exp;
@@ -23,19 +24,62 @@ public class GameManager : MonoBehaviour
     public PoolManager pool;
     public Player player;
     public LevelUp uiLevelUp;
+    public Result uiResult;
+    public GameObject enemyCleaner;
 
     void Awake()
     {
         Instance = this;
     }
 
-    void Start()
+    public void GameStart()
     {
         health = maxHealth;
 
-        // test code
+        // 캐릭터에게 기본 무기 제공
         uiLevelUp.select(0);
+        Resume();
     }
+
+    public void GameOver()
+    {
+        StartCoroutine(GameOverRoutione());
+    }
+
+    IEnumerator GameOverRoutione()
+    {
+        isLive = false;
+
+        yield return new WaitForSeconds(0.3f);
+
+        uiResult.gameObject.SetActive(true);
+        uiResult.Lose();
+        Stop();
+    }
+
+    public void GameVictory()
+    {
+        StartCoroutine(GameVictoryRoutione());
+    }
+
+    IEnumerator GameVictoryRoutione()
+    {
+        isLive = false;
+        enemyCleaner.SetActive(true);
+
+        yield return new WaitForSeconds(0.5f);
+
+        uiResult.gameObject.SetActive(true);
+        uiResult.Win();
+        Stop();
+    }
+
+    public void GameRetry()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+
     void Update()
     {
         if (!isLive)
@@ -46,12 +90,16 @@ public class GameManager : MonoBehaviour
         if (gameTime > maxGameTime)
         {
             gameTime = maxGameTime;
+            GameVictory();
         }
 
     }
 
     public void GetExp()
     {
+        if (!isLive)
+            return;
+
         exp++;
         // 만약 9레벨 이상일 떈 항상 nextLevel.Length + 1 (9) 이를 통해 무한 레벨 생성
         if (exp >= nextExp[Mathf.Min(level, nextExp.Length - 1)])
