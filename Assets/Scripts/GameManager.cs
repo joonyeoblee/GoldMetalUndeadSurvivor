@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public float gameTime;
     public float maxGameTime = 2 * 10;
     [Header("# Player Info")]
+    public int playerId;
     public float health;
     public float maxHealth = 100;
     public int level;
@@ -32,12 +33,15 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
-    public void GameStart()
+    public void GameStart(int id)
     {
+        playerId = id;
+
         health = maxHealth;
 
-        // 캐릭터에게 기본 무기 제공
-        uiLevelUp.select(0);
+        player.gameObject.SetActive(true);
+        // 캐릭터에게 기본 무기 제공 무기가 2개인데 캐릭터가 더 많아질 때를 대비해 나머지 활용
+        uiLevelUp.select(playerId % 2);
         Resume();
     }
 
