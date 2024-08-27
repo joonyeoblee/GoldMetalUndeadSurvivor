@@ -36,13 +36,14 @@ public class GameManager : MonoBehaviour
     public void GameStart(int id)
     {
         playerId = id;
-
         health = maxHealth;
 
         player.gameObject.SetActive(true);
         // 캐릭터에게 기본 무기 제공 무기가 2개인데 캐릭터가 더 많아질 때를 대비해 나머지 활용
         uiLevelUp.select(playerId % 2);
         Resume();
+
+        AudioManager.Instance.PlaySfx(AudioManager.Sfx.Select);
     }
 
     public void GameOver()
@@ -59,6 +60,8 @@ public class GameManager : MonoBehaviour
         uiResult.gameObject.SetActive(true);
         uiResult.Lose();
         Stop();
+
+        AudioManager.Instance.PlaySfx(AudioManager.Sfx.Lose);
     }
 
     public void GameVictory()
@@ -76,6 +79,8 @@ public class GameManager : MonoBehaviour
         uiResult.gameObject.SetActive(true);
         uiResult.Win();
         Stop();
+
+        AudioManager.Instance.PlaySfx(AudioManager.Sfx.Win);
     }
 
     public void GameRetry()
