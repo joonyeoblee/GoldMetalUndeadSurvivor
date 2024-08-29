@@ -24,14 +24,12 @@ public class Reposition : MonoBehaviour
         switch (transform.tag)
         {
             case "Ground":
-                float dirX = playerPos.x - myPos.x;
-                float dirY = playerPos.y - myPos.y;
-
-                dirX = dirX > 0 ? 1 : -1;
-                dirY = dirY > 0 ? 1 : -1;
-
-                float diffX = Mathf.Abs(dirX);
-                float diffY = Mathf.Abs(dirY);
+                float diffX = playerPos.x - myPos.x;
+                float diffY = playerPos.y - myPos.y;
+                float dirX = diffX < 0 ? -1 : 1;
+                float dirY = diffY < 0 ? -1 : 1;
+                diffX = Mathf.Abs(diffX);
+                diffY = Mathf.Abs(diffY);
 
                 if (diffX > diffY)
                 {
