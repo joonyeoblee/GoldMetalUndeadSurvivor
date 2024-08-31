@@ -41,6 +41,7 @@ public class Player : MonoBehaviour
         rigid.MovePosition(rigid.position + nextVec);
     }
 
+    //Input System
     void OnMove(InputValue value)
     {
         if (!GameManager.Instance.isLive)
